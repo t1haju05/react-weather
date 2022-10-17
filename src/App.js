@@ -1,25 +1,46 @@
-import logo from './logo.svg';
 import './App.css';
+import Weather from './weather';
+import { useEffect, useState } from 'react';
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
+  const [isLoading, setisLoading] = useState(true)
+  const [lat, setLat] = useState(0)
+  const [lng, setLng] = useState(0)
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(position => {
+        setLat(position.coords.latitude)
+        setLng(position.coords.longitude)
+        setisLoading(false)
+      }, (error) => {
+        alert(error)
+      })
+    }
+    else {
+      alert('GPS not supported')
+    }
+  }, [])
+
+  if (isLoading) {
+    return (
+      <p>Loading...</p>
+    )
+  }
+  else {
+    return (
+      <div className="content">
+        <h3>Your position</h3>
         <p>
-          Edit <code>src/App.js</code> and save to reload.
+          Position:&nbsp;
+          {lat.toFixed(3)},
+          {lng.toFixed(3)},
         </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+        <Weather lat={lat} lng={lng} />
+      </div>
+    )
+  }
+
 }
+
 
 export default App;
